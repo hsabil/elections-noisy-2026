@@ -813,7 +813,7 @@
       <table class="part-detail-table" id="part-detail-table">
         <thead>
           <tr>
-            <th>BV</th><th>Lieu</th><th>Inscrits</th><th>10h</th><th>12h</th><th>17h</th><th>19h</th><th>Statut</th>
+            <th>BV</th><th>Lieu</th><th>Inscrits</th><th>10h</th><th>12h</th><th>17h</th><th>20h</th><th>Statut</th>
           </tr>
         </thead>
         <tbody id="part-detail-tbody"></tbody>
@@ -1031,11 +1031,11 @@
           <div style="font-size:0.78rem;color:#888;padding-top:8px;" id="part-time-17">—</div>
         </div>
       </div>
-      <!-- 19h -->
+      <!-- 20h -->
       <div class="part-horaire-row">
-        <div class="part-horaire-label" style="color:var(--secondary);">19h00</div>
+        <div class="part-horaire-label" style="color:var(--secondary);">20h00</div>
         <div>
-          <label for="part-h19">Votants à 19h</label>
+          <label for="part-h19">Votants à 20h</label>
           <input type="number" id="part-h19" min="0" placeholder="0" oninput="calcParticipationForm()" />
         </div>
         <div>
@@ -1206,7 +1206,7 @@
 //   president   → saisie de son bureau uniquement (via lien ?bv=X)
 // ══════════════════════════════════════════════════════════════════════════════
 const ACCESS_PASSWORDS = {
-  admin:       "Admin2026!",    // ← Changez ce mot de passe
+  admin:       "Brigitte33!",    // ← Changez ce mot de passe
   observateur: "Obs2026!",      // ← Changez ce mot de passe
   president:   "BV2026!",       // ← Changez ce mot de passe (commun à tous les présidents)
 };
@@ -2704,7 +2704,7 @@ function updateDashboardParticipation() {
   if (pbar) pbar.style.width = (last || 0) + '%';
 
   // Chart ligne
-  const labels = ['10h00','12h00','17h00','19h00'];
+  const labels = ['10h00','12h00','17h00','20h00'];
   const data   = HORAIRES.map(h => avgPcts[h] !== null ? parseFloat(avgPcts[h].toFixed(2)) : null);
 
   if (chartParticipation) chartParticipation.destroy();

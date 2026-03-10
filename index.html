@@ -346,9 +346,151 @@
     body.mode-president .saisie-container { max-width: 700px; }
     body.mode-president #nav-bureaux-wrap { display: none !important; }
     body.mode-president #bureau-select-wrap { display: none !important; }
+
+    /* ─── ÉCRAN DE CONNEXION ─── */
+    #login-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #0d2347 0%, #1a3a6e 50%, #0d2347 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    #login-overlay.hidden { display: none; }
+    .login-box {
+      background: white; border-radius: 24px; padding: 40px 36px;
+      max-width: 440px; width: 100%;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .login-box::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+      background: linear-gradient(90deg, #1a3a6e, #c8102e, #f4a700);
+    }
+    .login-flag { font-size: 3rem; margin-bottom: 8px; }
+    .login-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+    .login-subtitle { font-size: 0.8rem; color: #888; margin-bottom: 28px; }
+    .login-role-info {
+      background: var(--light-bg); border-radius: 12px; padding: 12px 16px;
+      margin-bottom: 22px; font-size: 0.82rem; color: #555; text-align: left;
+      border-left: 4px solid var(--primary); line-height: 1.6;
+    }
+    .login-role-info strong { color: var(--primary); }
+    .login-input-wrap { position: relative; margin-bottom: 16px; }
+    .login-input-wrap i.lock-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: #aaa; font-size: 1rem;
+    }
+    .login-input-wrap input {
+      width: 100%; padding: 13px 48px 13px 44px;
+      border: 2px solid #dce7f7; border-radius: 12px;
+      font-size: 1rem; outline: none; transition: border-color .2s;
+      letter-spacing: 2px;
+    }
+    .login-input-wrap input:focus { border-color: var(--primary); }
+    .login-input-wrap input.error-shake { border-color: var(--secondary); animation: shake .4s ease; }
+    .login-toggle-eye {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      color: #aaa; cursor: pointer; font-size: 1rem; padding: 4px;
+    }
+    @keyframes shake {
+      0%,100%{transform:translateX(0);} 20%{transform:translateX(-8px);}
+      40%{transform:translateX(8px);} 60%{transform:translateX(-6px);} 80%{transform:translateX(6px);}
+    }
+    .login-error {
+      background: #fee2e2; color: #991b1b; border-radius: 8px;
+      padding: 8px 14px; font-size: 0.82rem; font-weight: 600;
+      margin-bottom: 14px; display: none;
+    }
+    .login-error.show { display: block; }
+    .btn-login {
+      width: 100%; padding: 13px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), #2255a4);
+      color: white; font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-login:active { transform: translateY(0); }
+    .login-roles-hint {
+      margin-top: 22px; border-top: 1px solid #f0f4fa; padding-top: 16px;
+    }
+    .login-roles-hint p { font-size: 0.75rem; color: #aaa; margin-bottom: 10px; }
+    .role-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .role-badge {
+      font-size: 0.72rem; padding: 4px 12px; border-radius: 20px; font-weight: 700;
+    }
+    .role-badge.admin    { background: #e8f0fe; color: #1a3a6e; }
+    .role-badge.obs      { background: #fef3c7; color: #92400e; }
+    .role-badge.president{ background: #d1fae5; color: #065f46; }
+
+    /* Bouton déconnexion dans le header */
+    .btn-logout {
+      background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);
+      padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+      cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 5px;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+    /* Badge rôle dans le header */
+    .role-header-badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .role-header-badge.admin    { background: rgba(255,255,255,0.2); color: white; }
+    .role-header-badge.obs      { background: #f4a700; color: #1a1a2e; }
+    .role-header-badge.president{ background: #198754; color: white; }
+
+    /* Mode observateur : cacher les éléments de saisie */
+    body.mode-observateur .btn-save,
+    body.mode-observateur .btn-reset,
+    body.mode-observateur #tab-saisie,
+    body.mode-observateur #tab-bureaux,
+    body.mode-observateur #liens-presidents-card,
+    body.mode-observateur #firebase-config-card,
+    body.mode-observateur .btn-reset-all { display: none !important; }
   </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- ÉCRAN DE CONNEXION -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-flag">🇫🇷</div>
+    <div class="login-title">Élections Municipales 2026</div>
+    <div class="login-subtitle">Noisy-le-Grand · Suivi des résultats</div>
+
+    <div class="login-role-info" id="login-role-info">
+      <strong><i class="fa-solid fa-shield-halved"></i> Accès sécurisé</strong><br>
+      Saisissez votre mot de passe pour accéder à l'application.
+    </div>
+
+    <div class="login-error" id="login-error">
+      <i class="fa-solid fa-circle-xmark"></i> Mot de passe incorrect. Veuillez réessayer.
+    </div>
+
+    <div class="login-input-wrap">
+      <i class="fa-solid fa-lock lock-icon"></i>
+      <input type="password" id="login-pwd" placeholder="Mot de passe"
+        onkeydown="if(event.key==='Enter') doLogin()"
+        autocomplete="current-password"/>
+      <i class="fa-solid fa-eye login-toggle-eye" id="eye-toggle"
+        onclick="toggleEye()"></i>
+    </div>
+
+    <button class="btn-login" onclick="doLogin()">
+      <i class="fa-solid fa-right-to-bracket"></i> Se connecter
+    </button>
+
+    <div class="login-roles-hint">
+      <p>Niveaux d'accès disponibles</p>
+      <div class="role-badges">
+        <span class="role-badge admin"><i class="fa-solid fa-crown"></i> Administrateur</span>
+        <span class="role-badge obs"><i class="fa-solid fa-eye"></i> Observateur</span>
+        <span class="role-badge president"><i class="fa-solid fa-id-badge"></i> Président de bureau</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ─── HEADER ─── -->
 <header class="main-header">
@@ -362,6 +504,7 @@
     </div>
     <div class="tour-badge" id="tour-badge-wrap">
       <div id="mode-badge"></div>
+      <div id="role-header-display"></div>
       <div class="live-indicator" id="sync-status-indicator">
         <div class="live-dot" id="sync-dot"></div>
         <span id="sync-label">LOCAL</span>
@@ -371,6 +514,9 @@
       </button>
       <button class="btn-tour" id="btnTour2" onclick="setTour(2)">
         <i class="fa-solid fa-2"></i> 22 mars
+      </button>
+      <button class="btn-logout" onclick="doLogout()" id="btn-logout" style="display:none;">
+        <i class="fa-solid fa-right-from-bracket"></i> Déconnexion
       </button>
     </div>
   </div>
@@ -753,6 +899,19 @@
 <!-- JAVASCRIPT -->
 <!-- ══════════════════════════════════════════════════════════ -->
 <script>
+// ══════════════════════════════════════════════════════════════════════════════
+// ▶ MOTS DE PASSE — À PERSONNALISER PAR L'ADMINISTRATEUR ◀
+//   admin       → accès complet (tableau de bord, saisie, rapport, config)
+//   observateur → lecture seule (tableau de bord + rapport uniquement)
+//   president   → saisie de son bureau uniquement (via lien ?bv=X)
+// ══════════════════════════════════════════════════════════════════════════════
+const ACCESS_PASSWORDS = {
+  admin:       "Brigitte33!",    // ← Changez ce mot de passe
+  observateur: "Obs2026!",      // ← Changez ce mot de passe
+  president:   "BV2026!",       // ← Changez ce mot de passe (commun à tous les présidents)
+};
+// ══════════════════════════════════════════════════════════════════════════════
+
 // ══════════════════════════════════════
 // DATA
 // ══════════════════════════════════════
@@ -843,6 +1002,9 @@ let chartBars = null, chartPie = null;
 let isPresidentMode = false;
 let lockedBureauNum = null;
 
+// Authentification
+let currentRole = null; // 'admin' | 'observateur' | 'president'
+
 // Firebase
 let firebaseApp = null;
 let firebaseDb = null;
@@ -851,6 +1013,112 @@ let fbListeners = {}; // Pour stopper les listeners
 
 // Cache local des données Firebase
 let fbCache = {};
+
+// ══════════════════════════════════════
+// AUTHENTIFICATION
+// ══════════════════════════════════════
+const AUTH_SESSION_KEY = 'nlg_auth_role_2026';
+
+function checkAuth() {
+  const saved = sessionStorage.getItem(AUTH_SESSION_KEY);
+  if (saved) {
+    currentRole = saved;
+    applyRole(currentRole);
+    return true;
+  }
+  // Adapter le message de l'écran login selon le contexte
+  const params = new URLSearchParams(window.location.search);
+  const bvParam = params.get('bv');
+  if (bvParam) {
+    const bvNum = parseInt(bvParam);
+    const bv = BUREAUX.find(b => b.num === bvNum);
+    document.getElementById('login-role-info').innerHTML = `
+      <strong><i class='fa-solid fa-id-badge' style='color:var(--success)'></i>
+      Bureau n°${bvNum} — ${bv ? bv.lieu : ''}</strong><br>
+      Saisissez le mot de passe <strong>Président de bureau</strong>
+      pour accéder au formulaire de saisie de votre bureau.
+    `;
+  }
+  return false;
+}
+
+function doLogin() {
+  const pwd = document.getElementById('login-pwd').value;
+  const inputEl = document.getElementById('login-pwd');
+  const errorEl = document.getElementById('login-error');
+  const params = new URLSearchParams(window.location.search);
+  const bvParam = params.get('bv');
+
+  let role = null;
+  if (pwd === ACCESS_PASSWORDS.admin)       role = 'admin';
+  else if (pwd === ACCESS_PASSWORDS.observateur) role = 'observateur';
+  else if (pwd === ACCESS_PASSWORDS.president)   role = 'president';
+
+  // En mode président (URL ?bv=X), seuls les mots de passe admin et president sont acceptés
+  if (bvParam && role === 'observateur') role = null;
+
+  if (!role) {
+    inputEl.classList.add('error-shake');
+    inputEl.value = '';
+    errorEl.classList.add('show');
+    setTimeout(() => inputEl.classList.remove('error-shake'), 500);
+    return;
+  }
+
+  errorEl.classList.remove('show');
+  sessionStorage.setItem(AUTH_SESSION_KEY, role);
+  currentRole = role;
+
+  // Fermer l'overlay avec animation
+  const overlay = document.getElementById('login-overlay');
+  overlay.style.transition = 'opacity 0.4s';
+  overlay.style.opacity = '0';
+  setTimeout(() => {
+    overlay.classList.add('hidden');
+    applyRole(role);
+    initApp();
+  }, 400);
+}
+
+function doLogout() {
+  sessionStorage.removeItem(AUTH_SESSION_KEY);
+  currentRole = null;
+  // Recharger la page pour réafficher l'écran de connexion
+  window.location.reload();
+}
+
+function toggleEye() {
+  const input = document.getElementById('login-pwd');
+  const icon  = document.getElementById('eye-toggle');
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.className = 'fa-solid fa-eye-slash login-toggle-eye';
+  } else {
+    input.type = 'password';
+    icon.className = 'fa-solid fa-eye login-toggle-eye';
+  }
+}
+
+function applyRole(role) {
+  const body = document.body;
+  const roleDisplay = document.getElementById('role-header-display');
+  const logoutBtn   = document.getElementById('btn-logout');
+
+  if (logoutBtn) logoutBtn.style.display = 'flex';
+
+  if (role === 'admin') {
+    body.classList.remove('mode-observateur');
+    if (roleDisplay) roleDisplay.innerHTML = `<span class="role-header-badge admin"><i class="fa-solid fa-crown"></i> Admin</span>`;
+  } else if (role === 'observateur') {
+    body.classList.add('mode-observateur');
+    if (roleDisplay) roleDisplay.innerHTML = `<span class="role-header-badge obs"><i class="fa-solid fa-eye"></i> Observateur</span>`;
+    // Forcer l'onglet dashboard
+    setTimeout(() => showPage('dashboard'), 100);
+  } else if (role === 'president') {
+    body.classList.remove('mode-observateur');
+    if (roleDisplay) roleDisplay.innerHTML = `<span class="role-header-badge president"><i class="fa-solid fa-id-badge"></i> Président BV</span>`;
+  }
+}
 
 // ══════════════════════════════════════
 // INITIALISATION URL PARAMS
@@ -1819,7 +2087,7 @@ function updateAll() {
   if (activePageEl?.id === 'page-rapport') { renderRapport(); renderLiensPresidents(); }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initApp() {
   // 1. Initialiser depuis URL
   initFromURL();
 
@@ -1846,6 +2114,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. Initialiser l'interface
   updateDashboard();
   if (!isPresidentMode) renderBureaux();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Vérifier l'authentification en premier
+  if (checkAuth()) {
+    // Déjà connecté (session active) → lancer l'app directement
+    document.getElementById('login-overlay').classList.add('hidden');
+    initApp();
+  }
+  // Sinon l'écran de connexion est déjà visible, on attend doLogin()
 });
 </script>
 </body>

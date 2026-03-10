@@ -342,10 +342,16 @@
     ::-webkit-scrollbar-track { background: #f0f4fa; }
     ::-webkit-scrollbar-thumb { background: #adc5e5; border-radius: 3px; }
 
-    /* Mode président : formulaire épuré */
+    /* Mode président : accès strictement limité à la saisie de son bureau */
     body.mode-president .saisie-container { max-width: 700px; }
-    body.mode-president #nav-bureaux-wrap { display: none !important; }
-    body.mode-president #bureau-select-wrap { display: none !important; }
+    body.mode-president #nav-bureaux-wrap     { display: none !important; }
+    body.mode-president #bureau-select-wrap   { display: none !important; }
+    /* Masquer TOUT ce qu'un président ne doit pas voir */
+    body.mode-president #tab-dashboard        { display: none !important; }
+    body.mode-president #tab-bureaux          { display: none !important; }
+    body.mode-president #tab-rapport          { display: none !important; }
+    body.mode-president #btnTour1             { display: none !important; }
+    body.mode-president #btnTour2             { display: none !important; }
 
     /* ─── ÉCRAN DE CONNEXION ─── */
     #login-overlay {
@@ -438,14 +444,16 @@
     .role-header-badge.obs      { background: #f4a700; color: #1a1a2e; }
     .role-header-badge.president{ background: #198754; color: white; }
 
-    /* Mode observateur : cacher les éléments de saisie */
+    /* Mode observateur : lecture seule — uniquement dashboard + rapport épuré */
     body.mode-observateur .btn-save,
     body.mode-observateur .btn-reset,
     body.mode-observateur #tab-saisie,
     body.mode-observateur #tab-bureaux,
     body.mode-observateur #liens-presidents-card,
     body.mode-observateur #firebase-config-card,
-    body.mode-observateur .btn-reset-all { display: none !important; }
+    body.mode-observateur .btn-reset-all,
+    body.mode-observateur .btn-export,
+    body.mode-observateur .btn-print         { display: none !important; }
   </style>
 </head>
 <body>
@@ -1050,16 +1058,27 @@ function doLogin() {
   const bvParam = params.get('bv');
 
   let role = null;
-  if (pwd === ACCESS_PASSWORDS.admin)       role = 'admin';
+  if      (pwd === ACCESS_PASSWORDS.admin)       role = 'admin';
   else if (pwd === ACCESS_PASSWORDS.observateur) role = 'observateur';
   else if (pwd === ACCESS_PASSWORDS.president)   role = 'president';
 
-  // En mode président (URL ?bv=X), seuls les mots de passe admin et president sont acceptés
-  if (bvParam && role === 'observateur') role = null;
+  // BUG FIX 1 : mot de passe président utilisé SANS lien ?bv=X → refusé
+  if (role === 'president' && !bvParam) {
+    inputEl.classList.add('error-shake');
+    inputEl.value = '';
+    errorEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Ce mot de passe nécessite un lien bureau personnalisé (?bv=X). Contactez l\'administrateur.';
+    errorEl.classList.add('show');
+    setTimeout(() => inputEl.classList.remove('error-shake'), 500);
+    return;
+  }
+
+  // BUG FIX 2 : mot de passe observateur interdit sur un lien ?bv=X
+  if (role === 'observateur' && bvParam) role = null;
 
   if (!role) {
     inputEl.classList.add('error-shake');
     inputEl.value = '';
+    errorEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Mot de passe incorrect. Veuillez réessayer.';
     errorEl.classList.add('show');
     setTimeout(() => inputEl.classList.remove('error-shake'), 500);
     return;
@@ -1104,19 +1123,28 @@ function applyRole(role) {
   const roleDisplay = document.getElementById('role-header-display');
   const logoutBtn   = document.getElementById('btn-logout');
 
+  // Toujours réinitialiser les classes de rôle
+  body.classList.remove('mode-observateur', 'mode-president');
   if (logoutBtn) logoutBtn.style.display = 'flex';
 
   if (role === 'admin') {
-    body.classList.remove('mode-observateur');
-    if (roleDisplay) roleDisplay.innerHTML = `<span class="role-header-badge admin"><i class="fa-solid fa-crown"></i> Admin</span>`;
+    // Accès complet — aucune restriction CSS
+    if (roleDisplay) roleDisplay.innerHTML =
+      `<span class="role-header-badge admin"><i class="fa-solid fa-crown"></i> Admin</span>`;
+
   } else if (role === 'observateur') {
+    // Lecture seule : dashboard + rapport (sans boutons d'action)
     body.classList.add('mode-observateur');
-    if (roleDisplay) roleDisplay.innerHTML = `<span class="role-header-badge obs"><i class="fa-solid fa-eye"></i> Observateur</span>`;
-    // Forcer l'onglet dashboard
+    if (roleDisplay) roleDisplay.innerHTML =
+      `<span class="role-header-badge obs"><i class="fa-solid fa-eye"></i> Observateur</span>`;
     setTimeout(() => showPage('dashboard'), 100);
+
   } else if (role === 'president') {
-    body.classList.remove('mode-observateur');
-    if (roleDisplay) roleDisplay.innerHTML = `<span class="role-header-badge president"><i class="fa-solid fa-id-badge"></i> Président BV</span>`;
+    // BUG FIX 3 : appliquer IMMÉDIATEMENT la classe CSS mode-president
+    // (avant même que initFromURL() soit appelé)
+    body.classList.add('mode-president');
+    if (roleDisplay) roleDisplay.innerHTML =
+      `<span class="role-header-badge president"><i class="fa-solid fa-id-badge"></i> Président BV</span>`;
   }
 }
 
@@ -1393,7 +1421,14 @@ function setTour(t) {
 // NAVIGATION PAGES
 // ══════════════════════════════════════
 function showPage(name) {
-  // En mode président, bloquer l'accès à certaines pages
+  // BUG FIX : garde côté JS (le CSS ne suffit pas — double sécurisation)
+  if (currentRole === 'president' && name !== 'saisie') {
+    name = 'saisie';
+  }
+  if (currentRole === 'observateur' && (name === 'saisie' || name === 'bureaux')) {
+    name = 'dashboard';
+  }
+  // Garde hérité (mode president via URL)
   if (isPresidentMode && (name === 'dashboard' || name === 'bureaux' || name === 'rapport')) {
     name = 'saisie';
   }

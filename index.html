@@ -500,7 +500,61 @@
     body.mode-observateur .btn-reset-all,
     body.mode-observateur .btn-export,
     body.mode-observateur .btn-print         { display: none !important; }
-  </style>
+  
+    /* ── MODULE PARTICIPATION HORAIRE ── */
+    .part-container { max-width: 780px; margin: 0 auto; padding: 20px 16px; }
+    .part-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-radius: 14px; padding: 18px 22px; margin-bottom: 20px; }
+    .part-header h2 { margin: 0 0 4px; font-size: 1.25rem; }
+    .part-header p  { margin: 0; font-size: 0.85rem; opacity: 0.85; }
+    .part-inscrits-wrap { background: white; border-radius: 12px; box-shadow: var(--card-shadow); padding: 16px 20px; margin-bottom: 18px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .part-inscrits-wrap label { font-size: 0.85rem; font-weight: 700; color: #444; white-space: nowrap; }
+    .part-inscrits-wrap input { width: 160px; padding: 9px 13px; border: 2px solid #dce7f7; border-radius: 9px; font-size: 1rem; font-weight: 700; outline: none; transition: border-color .2s; }
+    .part-inscrits-wrap input:focus { border-color: var(--primary); }
+    .part-inscrits-wrap small { color: #888; font-size: 0.76rem; }
+    .part-horaires-card { background: white; border-radius: 14px; box-shadow: var(--card-shadow); overflow: hidden; margin-bottom: 18px; }
+    .part-horaires-header { background: var(--primary); color: white; padding: 12px 18px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .part-horaire-row { display: grid; grid-template-columns: 80px 1fr 1fr 1fr; gap: 12px; align-items: center; padding: 14px 18px; border-bottom: 1px solid #f0f4fa; transition: background .15s; }
+    .part-horaire-row:last-child { border-bottom: none; }
+    .part-horaire-row:hover { background: #f8faff; }
+    .part-horaire-label { font-size: 1.1rem; font-weight: 800; color: var(--primary); text-align: center; }
+    .part-horaire-row label { font-size: 0.78rem; font-weight: 600; color: #666; margin-bottom: 4px; display: block; }
+    .part-horaire-row input[type="number"] { width: 100%; padding: 9px 11px; border: 2px solid #dce7f7; border-radius: 9px; font-size: 0.93rem; outline: none; transition: border-color .2s; }
+    .part-horaire-row input[type="number"]:focus { border-color: var(--primary); }
+    .part-taux-display { background: linear-gradient(135deg, #e8f4fd, #d0eaff); border-radius: 10px; padding: 10px 14px; text-align: center; }
+    .part-taux-value { font-size: 1.4rem; font-weight: 800; color: var(--primary); line-height: 1; }
+    .part-taux-sub { font-size: 0.7rem; color: #888; margin-top: 3px; }
+    .part-save-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    /* Dashboard — bloc participation intermédiaire */
+    .part-dash-card { background: white; border-radius: 14px; box-shadow: var(--card-shadow); margin-bottom: 20px; overflow: hidden; }
+    .part-dash-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 13px 18px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+    .part-dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+    .part-dash-slot { padding: 14px 10px; border-right: 1px solid #f0f4fa; text-align: center; }
+    .part-dash-slot:last-child { border-right: none; }
+    .part-dash-time { font-size: 0.82rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .part-dash-pct { font-size: 1.6rem; font-weight: 800; color: #222; line-height: 1; }
+    .part-dash-sub { font-size: 0.7rem; color: #999; margin-top: 3px; }
+    .part-dash-progress { height: 6px; background: #e8f0fe; margin: 0 12px 10px; border-radius: 3px; overflow: hidden; }
+    .part-dash-bar { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 3px; transition: width .5s; }
+    /* Chart ligne */
+    .part-chart-container { padding: 12px 16px 16px; }
+    .part-chart-wrap { height: 160px; position: relative; }
+    /* Tableau détail par BV */
+    .part-detail-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    .part-detail-table th { background: var(--primary); color: white; padding: 8px 10px; text-align: center; font-size: 0.78rem; }
+    .part-detail-table td { padding: 7px 10px; border-bottom: 1px solid #f0f4fa; text-align: center; }
+    .part-detail-table tr:hover td { background: #f8faff; }
+    .part-detail-table td:nth-child(2) { text-align: left; font-weight: 600; }
+    .part-badge-done { background: #d1fae5; color: #065f46; border-radius: 20px; padding: 2px 9px; font-size: 0.72rem; font-weight: 700; }
+    .part-badge-wait { background: #fef3c7; color: #92400e; border-radius: 20px; padding: 2px 9px; font-size: 0.72rem; font-weight: 700; }
+    /* Hide participation tab for observateur */
+    body.mode-observateur #tab-participation { display: none !important; }
+    body.mode-president #part-detail-wrap { display: none !important; }
+    @media (max-width: 640px) {
+      .part-horaire-row { grid-template-columns: 60px 1fr 1fr; }
+      .part-taux-display { grid-column: 2 / span 2; }
+      .part-dash-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
 </head>
 <body>
 
@@ -618,6 +672,10 @@
     <div class="nav-tab-item" data-page="saisie" onclick="showPage('saisie')" id="tab-saisie">
       <i class="fa-solid fa-pencil"></i> Saisie résultats
     </div>
+    <div class="nav-tab-item" data-page="participation" onclick="showPage('participation')" id="tab-participation">
+      <i class="fa-solid fa-clock"></i> Participation
+      <span class="badge-count" id="badge-part">0/43</span>
+    </div>
     <div class="nav-tab-item" data-page="rapport" onclick="showPage('rapport')" id="tab-rapport">
       <i class="fa-solid fa-file-lines"></i> Rapport &amp; Export
     </div>
@@ -729,6 +787,36 @@
           </tr>
         </thead>
         <tbody id="results-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+
+  <!-- ► PARTICIPATION INTERMÉDIAIRE ◄ -->
+  <div class="part-dash-card" id="part-dash-card">
+    <div class="part-dash-header">
+      <i class="fa-solid fa-clock"></i> Participation intermédiaire en temps réel
+      <span id="part-dash-subtitle" style="font-weight:400;font-size:0.82rem;margin-left:auto;opacity:0.85;">— bureau(x) ayant transmis</span>
+    </div>
+    <div class="part-dash-grid" id="part-dash-grid">
+      <div class="part-dash-slot"><div class="part-dash-time">10h00</div><div class="part-dash-pct" id="part-pct-10">—</div><div class="part-dash-sub" id="part-sub-10">en attente</div></div>
+      <div class="part-dash-slot"><div class="part-dash-time">12h00</div><div class="part-dash-pct" id="part-pct-12">—</div><div class="part-dash-sub" id="part-sub-12">en attente</div></div>
+      <div class="part-dash-slot"><div class="part-dash-time">17h00</div><div class="part-dash-pct" id="part-pct-17">—</div><div class="part-dash-sub" id="part-sub-17">en attente</div></div>
+      <div class="part-dash-slot"><div class="part-dash-time">19h00</div><div class="part-dash-pct" id="part-pct-19">—</div><div class="part-dash-sub" id="part-sub-19">en attente</div></div>
+    </div>
+    <div class="part-dash-progress"><div class="part-dash-bar" id="part-dash-pbar" style="width:0%;"></div></div>
+    <div class="part-chart-container" id="part-chart-wrap-outer">
+      <div class="part-chart-wrap"><canvas id="chartParticipation"></canvas></div>
+    </div>
+    <!-- Tableau détail (admin uniquement, caché mode-president) -->
+    <div id="part-detail-wrap" style="overflow-x:auto;padding:0 0 4px;">
+      <table class="part-detail-table" id="part-detail-table">
+        <thead>
+          <tr>
+            <th>BV</th><th>Lieu</th><th>Inscrits</th><th>10h</th><th>12h</th><th>17h</th><th>19h</th><th>Statut</th>
+          </tr>
+        </thead>
+        <tbody id="part-detail-tbody"></tbody>
       </table>
     </div>
   </div>
@@ -850,6 +938,131 @@
         <button class="btn-nav" id="btn-next" onclick="navBureau(1)">Suivant <i class="fa-solid fa-chevron-right"></i></button>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- PAGE 5 : PARTICIPATION HORAIRE                            -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div class="page fade-in" id="page-participation">
+  <div class="part-container">
+
+    <!-- En-tête -->
+    <div class="part-header">
+      <h2><i class="fa-solid fa-clock"></i> Participation intermédiaire</h2>
+      <p id="part-bv-subtitle">Saisissez le nombre de votants à chaque horaire clé</p>
+    </div>
+
+    <!-- Sélecteur bureau (caché en mode président) -->
+    <div id="part-bureau-select-wrap" style="margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <label style="font-size:0.82rem;font-weight:700;color:#555;">Bureau de vote :</label>
+      <select id="part-bureau-select" onchange="loadParticipationBureau()" style="flex:1;padding:8px 12px;border:2px solid #dce7f7;border-radius:8px;font-size:0.88rem;outline:none;max-width:400px;"></select>
+    </div>
+
+    <!-- Nombre d'inscrits -->
+    <div class="part-inscrits-wrap">
+      <i class="fa-solid fa-users" style="color:var(--primary);font-size:1.2rem;"></i>
+      <label for="part-inscrits">Nombre d'inscrits :</label>
+      <input type="number" id="part-inscrits" min="0" placeholder="ex. 1024"
+             oninput="calcParticipationForm()" />
+      <small><i class="fa-solid fa-info-circle"></i> À renseigner une fois, en début de journée. Les taux sont calculés automatiquement.</small>
+    </div>
+
+    <!-- Tableau 4 horaires -->
+    <div class="part-horaires-card">
+      <div class="part-horaires-header">
+        <i class="fa-solid fa-hourglass-half"></i> Votants par horaire
+      </div>
+      <!-- 10h -->
+      <div class="part-horaire-row">
+        <div class="part-horaire-label">10h00</div>
+        <div>
+          <label for="part-h10">Votants à 10h</label>
+          <input type="number" id="part-h10" min="0" placeholder="0" oninput="calcParticipationForm()" />
+        </div>
+        <div>
+          <label>Taux calculé</label>
+          <div class="part-taux-display">
+            <div class="part-taux-value" id="part-taux-10">—</div>
+            <div class="part-taux-sub">participation</div>
+          </div>
+        </div>
+        <div>
+          <label>Heure saisie</label>
+          <div style="font-size:0.78rem;color:#888;padding-top:8px;" id="part-time-10">—</div>
+        </div>
+      </div>
+      <!-- 12h -->
+      <div class="part-horaire-row">
+        <div class="part-horaire-label">12h00</div>
+        <div>
+          <label for="part-h12">Votants à 12h</label>
+          <input type="number" id="part-h12" min="0" placeholder="0" oninput="calcParticipationForm()" />
+        </div>
+        <div>
+          <label>Taux calculé</label>
+          <div class="part-taux-display">
+            <div class="part-taux-value" id="part-taux-12">—</div>
+            <div class="part-taux-sub">participation</div>
+          </div>
+        </div>
+        <div>
+          <label>Heure saisie</label>
+          <div style="font-size:0.78rem;color:#888;padding-top:8px;" id="part-time-12">—</div>
+        </div>
+      </div>
+      <!-- 17h -->
+      <div class="part-horaire-row">
+        <div class="part-horaire-label">17h00</div>
+        <div>
+          <label for="part-h17">Votants à 17h</label>
+          <input type="number" id="part-h17" min="0" placeholder="0" oninput="calcParticipationForm()" />
+        </div>
+        <div>
+          <label>Taux calculé</label>
+          <div class="part-taux-display">
+            <div class="part-taux-value" id="part-taux-17">—</div>
+            <div class="part-taux-sub">participation</div>
+          </div>
+        </div>
+        <div>
+          <label>Heure saisie</label>
+          <div style="font-size:0.78rem;color:#888;padding-top:8px;" id="part-time-17">—</div>
+        </div>
+      </div>
+      <!-- 19h -->
+      <div class="part-horaire-row">
+        <div class="part-horaire-label" style="color:var(--secondary);">19h00</div>
+        <div>
+          <label for="part-h19">Votants à 19h</label>
+          <input type="number" id="part-h19" min="0" placeholder="0" oninput="calcParticipationForm()" />
+        </div>
+        <div>
+          <label>Taux calculé</label>
+          <div class="part-taux-display" style="background:linear-gradient(135deg,#fef3c7,#fde68a);">
+            <div class="part-taux-value" id="part-taux-19" style="color:var(--secondary);">—</div>
+            <div class="part-taux-sub">participation</div>
+          </div>
+        </div>
+        <div>
+          <label>Heure saisie</label>
+          <div style="font-size:0.78rem;color:#888;padding-top:8px;" id="part-time-19">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Boutons -->
+    <div class="part-save-bar">
+      <button class="btn-save" onclick="saveParticipation()">
+        <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+      </button>
+      <button class="btn-reset" onclick="resetParticipationForm()">
+        <i class="fa-solid fa-rotate-left"></i> Réinitialiser
+      </button>
+      <span id="part-last-saved" style="font-size:0.78rem;color:#888;margin-left:auto;"></span>
+    </div>
+
   </div>
 </div>
 
@@ -1100,6 +1313,12 @@ let fbListeners = {}; // Pour stopper les listeners
 
 // Cache local des données Firebase
 let fbCache = {};
+
+// ── PARTICIPATION HORAIRE ──
+let fbCachePart = {};
+let chartParticipation = null;
+const HORAIRES = ['10','12','17','19'];
+
 
 // ══════════════════════════════════════
 // AUTHENTIFICATION
@@ -1367,6 +1586,7 @@ function applyPresidentMode(bvNum, bvIdx) {
 
   // Aller directement à la saisie
   showPage('saisie');
+
 }
 
 // ══════════════════════════════════════
@@ -1526,6 +1746,27 @@ function startFirebaseListeners() {
     if (activePageEl?.id === 'page-saisie') {
       loadBureau();
     }
+    if (activePageEl?.id === 'page-participation') renderParticipation();
+  });
+
+  // Listener participation horaire
+  const refPart = firebaseDb.ref(`participation2026`);
+  refPart.on('value', snapPart => {
+    const valP = snapPart.val() || {};
+    fbCachePart = {};
+    ['t1','t2'].forEach(tour => {
+      fbCachePart[tour] = {};
+      if (valP[tour]) {
+        Object.keys(valP[tour]).forEach(bvKey => {
+          const bvNum = parseInt(bvKey.replace('bv',''));
+          fbCachePart[tour][bvNum] = valP[tour][bvKey];
+        });
+      }
+    });
+    // Rafraîchir dashboard et page participation si active
+    updateDashboardParticipation();
+    const activeEl = document.querySelector('.page.active');
+    if (activeEl?.id === 'page-participation') renderParticipation();
   });
 }
 
@@ -1570,6 +1811,32 @@ function getAllData() {
   return BUREAUX.map(b => getData(b.num)).filter(d => d !== null);
 }
 
+
+// ══════════════════════════════════════
+// STORAGE PARTICIPATION HORAIRE
+// ══════════════════════════════════════
+function partStorageKey(bnum) { return `nlg_participation_2026_t${currentTour}_bv${bnum}`; }
+
+function getPartData(bnum) {
+  if (firebaseEnabled && firebaseDb) {
+    return fbCachePart[tourKey()]?.[bnum] || null;
+  }
+  const raw = localStorage.getItem(partStorageKey(bnum));
+  return raw ? JSON.parse(raw) : null;
+}
+
+function setPartData(bnum, obj) {
+  localStorage.setItem(partStorageKey(bnum), JSON.stringify(obj));
+  if (firebaseEnabled && firebaseDb) {
+    firebaseDb.ref(`participation2026/${tourKey()}/bv${bnum}`).set(obj)
+      .catch(e => showToast('Erreur Firebase participation : ' + e.message, 'error'));
+  }
+}
+
+function getAllPartData() {
+  return BUREAUX.map(b => ({ bnum: b.num, data: getPartData(b.num) })).filter(x => x.data !== null);
+}
+
 // ══════════════════════════════════════
 // TOUR
 // ══════════════════════════════════════
@@ -1589,7 +1856,7 @@ function setTour(t) {
 // ══════════════════════════════════════
 function showPage(name) {
   // BUG FIX : garde côté JS (le CSS ne suffit pas — double sécurisation)
-  if (currentRole === 'president' && name !== 'saisie') {
+  if (currentRole === 'president' && name !== 'saisie' && name !== 'participation') {
     name = 'saisie';
   }
   if (currentRole === 'observateur' && (name === 'saisie' || name === 'bureaux')) {
@@ -1599,6 +1866,7 @@ function showPage(name) {
   if (isPresidentMode && (name === 'dashboard' || name === 'bureaux' || name === 'rapport')) {
     name = 'saisie';
   }
+  if (isPresidentMode && name === 'participation') { /* allowed */ }
 
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab-item').forEach(t => t.classList.remove('active'));
@@ -1610,6 +1878,7 @@ function showPage(name) {
   if (name === 'saisie') renderSaisie();
   if (name === 'rapport') { renderRapport(); renderLiensPresidents(); }
   if (name === 'dashboard') updateDashboard();
+  if (name === 'participation') renderParticipation();
 }
 
 // ══════════════════════════════════════
@@ -2267,6 +2536,240 @@ function showConfirm(msg, cb) {
 }
 function closeModal() { document.getElementById('modal').classList.remove('open'); }
 
+
+// ══════════════════════════════════════
+// MODULE PARTICIPATION HORAIRE
+// ══════════════════════════════════════
+
+function renderParticipation() {
+  // Sélecteur bureau (caché en mode président)
+  const selWrap = document.getElementById('part-bureau-select-wrap');
+  const sel     = document.getElementById('part-bureau-select');
+  if (isPresidentMode) {
+    if (selWrap) selWrap.style.display = 'none';
+  } else {
+    if (selWrap) selWrap.style.display = 'flex';
+    if (sel) {
+      const prevVal = sel.value;
+      sel.innerHTML = BUREAUX.map(b => `<option value="${b.num}">Bureau n°${b.num} — ${b.lieu}</option>`).join('');
+      if (prevVal) sel.value = prevVal;
+    }
+  }
+  // Sous-titre
+  const bnum = isPresidentMode ? lockedBureauNum : parseInt(document.getElementById('part-bureau-select')?.value || BUREAUX[0].num);
+  const bObj = BUREAUX.find(b => b.num === bnum) || BUREAUX[0];
+  const subtitleEl = document.getElementById('part-bv-subtitle');
+  if (subtitleEl) subtitleEl.textContent = `Bureau n°${bnum} — ${bObj.lieu} · ${bObj.adresse}`;
+
+  loadParticipationBureau();
+}
+
+function loadParticipationBureau() {
+  const bnum = isPresidentMode ? lockedBureauNum : parseInt(document.getElementById('part-bureau-select')?.value || BUREAUX[0].num);
+  if (!bnum) return;
+
+  const d = getPartData(bnum);
+  // Pré-remplir inscrits depuis résultats si disponible
+  const resData = getData(bnum);
+  const inscrits = (d?.inscrits) || (resData?.inscrits) || '';
+  setInputVal('part-inscrits', inscrits);
+  setInputVal('part-h10', d?.h10 || '');
+  setInputVal('part-h12', d?.h12 || '');
+  setInputVal('part-h17', d?.h17 || '');
+  setInputVal('part-h19', d?.h19 || '');
+  // Timestamps
+  HORAIRES.forEach(h => {
+    const el = document.getElementById(`part-time-${h}`);
+    if (el) el.textContent = d?.[`ts${h}`] ? new Date(d[`ts${h}`]).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'}) : '—';
+  });
+  const savedEl = document.getElementById('part-last-saved');
+  if (savedEl) savedEl.textContent = d?.savedAt ? `Enregistré le ${new Date(d.savedAt).toLocaleString('fr-FR')}` : '';
+  calcParticipationForm();
+}
+
+function setInputVal(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = val !== null && val !== undefined && val !== '' ? val : '';
+}
+
+function calcParticipationForm() {
+  const inscrits = parseInt(document.getElementById('part-inscrits')?.value) || 0;
+  HORAIRES.forEach(h => {
+    const votants = parseInt(document.getElementById(`part-h${h}`)?.value) || 0;
+    const tauxEl  = document.getElementById(`part-taux-${h}`);
+    if (tauxEl) {
+      tauxEl.textContent = inscrits > 0 && votants > 0 ? (votants / inscrits * 100).toFixed(2) + '%' : '—';
+    }
+  });
+}
+
+function saveParticipation() {
+  const bnum = isPresidentMode ? lockedBureauNum : parseInt(document.getElementById('part-bureau-select')?.value || BUREAUX[0].num);
+  if (!bnum) return;
+
+  const inscrits = parseInt(document.getElementById('part-inscrits')?.value) || 0;
+  if (inscrits <= 0) {
+    showToast('Veuillez saisir le nombre d\'inscrits avant d\'enregistrer.', 'error');
+    return;
+  }
+  const now = Date.now();
+  const obj = { inscrits, savedAt: now };
+  let hasValue = false;
+  HORAIRES.forEach(h => {
+    const val = parseInt(document.getElementById(`part-h${h}`)?.value);
+    if (!isNaN(val) && val >= 0) {
+      obj[`h${h}`] = val;
+      // Conserver le timestamp existant si la valeur n'a pas changé
+      const existing = getPartData(bnum);
+      obj[`ts${h}`] = existing?.[`h${h}`] === val && existing?.[`ts${h}`] ? existing[`ts${h}`] : now;
+      hasValue = true;
+    }
+  });
+  if (!hasValue) {
+    showToast('Veuillez saisir au moins un nombre de votants.', 'error');
+    return;
+  }
+  setPartData(bnum, obj);
+
+  // Synchroniser inscrits avec résultats si non encore saisi
+  const resData = getData(bnum);
+  if (resData && !resData.inscrits) {
+    resData.inscrits = inscrits;
+    setData(bnum, resData);
+  }
+
+  document.getElementById('part-last-saved').textContent = `Enregistré à ${new Date(now).toLocaleTimeString('fr-FR')}`;
+  showToast(`Participation bureau n°${bnum} enregistrée ✓`, 'success');
+  updateDashboardParticipation();
+  // badge
+  updatePartBadge();
+}
+
+function resetParticipationForm() {
+  ['part-inscrits','part-h10','part-h12','part-h17','part-h19'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  HORAIRES.forEach(h => {
+    const t = document.getElementById(`part-taux-${h}`);
+    if (t) t.textContent = '—';
+    const ts = document.getElementById(`part-time-${h}`);
+    if (ts) ts.textContent = '—';
+  });
+  document.getElementById('part-last-saved').textContent = '';
+}
+
+function updatePartBadge() {
+  const count = BUREAUX.filter(b => getPartData(b.num) !== null).length;
+  const el = document.getElementById('badge-part');
+  if (el) el.textContent = `${count}/${TOTAL_BV}`;
+}
+
+// ── DASHBOARD : mise à jour bloc participation ──
+function updateDashboardParticipation() {
+  updatePartBadge();
+  const slots = { '10': [], '12': [], '17': [], '19': [] };
+  let nbWithData = 0;
+
+  BUREAUX.forEach(b => {
+    const d = getPartData(b.num);
+    if (!d || !d.inscrits) return;
+    nbWithData++;
+    HORAIRES.forEach(h => {
+      if (d[`h${h}`] !== undefined && d[`h${h}`] !== null && d[`h${h}`] !== '') {
+        slots[h].push(d[`h${h}`] / d.inscrits * 100);
+      }
+    });
+  });
+
+  // Mettre à jour sous-titre
+  const subEl = document.getElementById('part-dash-subtitle');
+  if (subEl) subEl.textContent = `${nbWithData} bureau${nbWithData > 1 ? 'x' : ''} ayant transmis`;
+
+  // Mettre à jour les tuiles horaires
+  const avgPcts = {};
+  HORAIRES.forEach(h => {
+    const arr = slots[h];
+    const avg = arr.length > 0 ? arr.reduce((s,v) => s+v, 0) / arr.length : null;
+    avgPcts[h] = avg;
+    const pctEl = document.getElementById(`part-pct-${h}`);
+    const subEl2 = document.getElementById(`part-sub-${h}`);
+    if (pctEl) pctEl.textContent = avg !== null ? avg.toFixed(1) + '%' : '—';
+    if (subEl2) subEl2.textContent = arr.length > 0 ? `moy. ${arr.length} BV` : 'en attente';
+  });
+
+  // Barre de progression : basée sur 19h (dernier horaire)
+  const last = avgPcts['19'] !== null ? avgPcts['19'] : (avgPcts['17'] !== null ? avgPcts['17'] : 0);
+  const pbar = document.getElementById('part-dash-pbar');
+  if (pbar) pbar.style.width = (last || 0) + '%';
+
+  // Chart ligne
+  const labels = ['10h00','12h00','17h00','19h00'];
+  const data   = HORAIRES.map(h => avgPcts[h] !== null ? parseFloat(avgPcts[h].toFixed(2)) : null);
+
+  if (chartParticipation) chartParticipation.destroy();
+  const canvas = document.getElementById('chartParticipation');
+  if (canvas) {
+    chartParticipation = new Chart(canvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Taux de participation moyen (%)',
+          data,
+          borderColor: 'var(--primary)',
+          backgroundColor: 'rgba(26,86,219,0.1)',
+          pointBackgroundColor: 'var(--primary)',
+          pointRadius: 5,
+          tension: 0.3,
+          fill: true,
+          spanGaps: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.parsed.y?.toFixed(2) ?? '—'}%` } } },
+        scales: {
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v+'%' }, grid: { color: '#f0f4fa' } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // Tableau détail (masqué en mode président)
+  const tbody = document.getElementById('part-detail-tbody');
+  if (!tbody) return;
+  if (isPresidentMode) {
+    const detailWrap = document.getElementById('part-detail-wrap');
+    if (detailWrap) detailWrap.style.display = 'none';
+    return;
+  }
+  tbody.innerHTML = '';
+  BUREAUX.forEach(b => {
+    const d = getPartData(b.num);
+    const ins = d?.inscrits || '—';
+    const fmtH = h => {
+      if (!d || d[`h${h}`] === undefined || d[`h${h}`] === null || d[`h${h}`] === '') return '<td style="color:#ccc">—</td>';
+      const taux = d.inscrits > 0 ? (d[`h${h}`] / d.inscrits * 100).toFixed(1) + '%' : '—';
+      return `<td>${taux}<br><small style="color:#aaa">${d[`h${h}`].toLocaleString('fr-FR')}</small></td>`;
+    };
+    const hasAny = d && HORAIRES.some(h => d[`h${h}`] !== undefined && d[`h${h}`] !== null && d[`h${h}`] !== '');
+    const badge  = hasAny
+      ? `<span class="part-badge-done">✅ Saisie</span>`
+      : `<span class="part-badge-wait">⏳ En attente</span>`;
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>n°${b.num}</strong></td>
+        <td>${b.lieu}</td>
+        <td>${typeof ins === 'number' ? ins.toLocaleString('fr-FR') : ins}</td>
+        ${fmtH('10')}${fmtH('12')}${fmtH('17')}${fmtH('19')}
+        <td>${badge}</td>
+      </tr>`;
+  });
+}
+
 // ══════════════════════════════════════
 // TOAST
 // ══════════════════════════════════════
@@ -2284,9 +2787,11 @@ function showToast(msg, type='') {
 // ══════════════════════════════════════
 function updateAll() {
   updateDashboard();
+  updateDashboardParticipation();
   const activePageEl = document.querySelector('.page.active');
   if (activePageEl?.id === 'page-bureaux') renderBureaux();
   if (activePageEl?.id === 'page-rapport') { renderRapport(); renderLiensPresidents(); }
+  if (activePageEl?.id === 'page-participation') renderParticipation();
 }
 
 function initApp() {
@@ -2315,6 +2820,7 @@ function initApp() {
 
   // 3. Initialiser l'interface
   updateDashboard();
+  updateDashboardParticipation();
   if (!isPresidentMode) renderBureaux();
 }
 

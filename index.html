@@ -358,29 +358,76 @@
       position: fixed; inset: 0; z-index: 9999;
       background: linear-gradient(135deg, #0d2347 0%, #1a3a6e 50%, #0d2347 100%);
       display: flex; align-items: center; justify-content: center;
-      padding: 20px;
+      padding: 20px; overflow-y: auto;
     }
     #login-overlay.hidden { display: none; }
     .login-box {
-      background: white; border-radius: 24px; padding: 40px 36px;
-      max-width: 440px; width: 100%;
+      background: white; border-radius: 24px; padding: 36px 32px 28px;
+      max-width: 500px; width: 100%;
       box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-      text-align: center; position: relative; overflow: hidden;
+      text-align: center; position: relative;
     }
     .login-box::before {
       content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+      border-radius: 24px 24px 0 0;
       background: linear-gradient(90deg, #1a3a6e, #c8102e, #f4a700);
     }
-    .login-flag { font-size: 3rem; margin-bottom: 8px; }
-    .login-title { font-size: 1.2rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
-    .login-subtitle { font-size: 0.8rem; color: #888; margin-bottom: 28px; }
-    .login-role-info {
-      background: var(--light-bg); border-radius: 12px; padding: 12px 16px;
-      margin-bottom: 22px; font-size: 0.82rem; color: #555; text-align: left;
-      border-left: 4px solid var(--primary); line-height: 1.6;
+    .login-flag { font-size: 2.6rem; margin-bottom: 6px; }
+    .login-title { font-size: 1.15rem; font-weight: 800; color: var(--primary); margin-bottom: 2px; }
+    .login-subtitle { font-size: 0.78rem; color: #888; margin-bottom: 24px; }
+
+    /* ── Étape 1 : cartes de rôle ── */
+    .login-step { transition: opacity .25s, transform .25s; }
+    .login-step.hidden-step { display: none; }
+    .step-label {
+      font-size: 0.78rem; font-weight: 700; color: #888; text-transform: uppercase;
+      letter-spacing: .6px; margin-bottom: 12px;
     }
-    .login-role-info strong { color: var(--primary); }
-    .login-input-wrap { position: relative; margin-bottom: 16px; }
+    .role-cards {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+      margin-bottom: 8px;
+    }
+    .role-card {
+      border: 2px solid #dce7f7; border-radius: 14px; padding: 14px 8px 12px;
+      cursor: pointer; transition: all .2s; background: white;
+    }
+    .role-card:hover { border-color: var(--primary); background: #f0f4fa; transform: translateY(-2px); }
+    .role-card.selected { border-color: var(--primary); background: #e8f0fe; }
+    .role-card.selected.obs-card  { border-color: #f4a700; background: #fffbeb; }
+    .role-card.selected.pres-card { border-color: var(--success); background: #f0fdf4; }
+    .role-card-icon { font-size: 1.6rem; margin-bottom: 6px; }
+    .role-card-label { font-size: 0.72rem; font-weight: 700; color: #444; line-height: 1.3; }
+
+    /* ── Étape 2 : formulaire ── */
+    .login-step2-header {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--light-bg); border-radius: 12px; padding: 10px 14px;
+      margin-bottom: 18px; text-align: left; cursor: pointer;
+    }
+    .login-step2-header:hover { background: #dce7f7; }
+    .login-step2-role-icon { font-size: 1.4rem; }
+    .login-step2-role-name { font-size: 0.88rem; font-weight: 700; color: var(--primary); }
+    .login-step2-change { font-size: 0.72rem; color: #aaa; margin-top: 1px; }
+
+    /* ── Sélecteur de bureau (étape 2 président) ── */
+    .bureau-select-wrap {
+      position: relative; margin-bottom: 14px; text-align: left;
+    }
+    .bureau-select-wrap label {
+      font-size: 0.78rem; font-weight: 700; color: #555;
+      display: block; margin-bottom: 5px;
+    }
+    .bureau-select-wrap select {
+      width: 100%; padding: 11px 14px;
+      border: 2px solid #dce7f7; border-radius: 12px;
+      font-size: 0.9rem; outline: none; transition: border-color .2s;
+      background: white; color: #1a1a2e; cursor: pointer;
+    }
+    .bureau-select-wrap select:focus { border-color: var(--success); }
+    .bureau-select-wrap select.error-shake { border-color: var(--secondary); animation: shake .4s ease; }
+
+    /* ── Champ mot de passe ── */
+    .login-input-wrap { position: relative; margin-bottom: 14px; }
     .login-input-wrap i.lock-icon {
       position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
       color: #aaa; font-size: 1rem;
@@ -404,7 +451,7 @@
     .login-error {
       background: #fee2e2; color: #991b1b; border-radius: 8px;
       padding: 8px 14px; font-size: 0.82rem; font-weight: 600;
-      margin-bottom: 14px; display: none;
+      margin-bottom: 12px; display: none; text-align: left;
     }
     .login-error.show { display: block; }
     .btn-login {
@@ -415,14 +462,13 @@
     }
     .btn-login:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-login:active { transform: translateY(0); }
-    .login-roles-hint {
-      margin-top: 22px; border-top: 1px solid #f0f4fa; padding-top: 16px;
+    .btn-login.pres { background: linear-gradient(135deg, #198754, #2ecc71); }
+    .btn-login.obs  { background: linear-gradient(135deg, #b45309, #f4a700); }
+    .login-footer {
+      margin-top: 18px; padding-top: 14px; border-top: 1px solid #f0f4fa;
+      font-size: 0.72rem; color: #bbb;
     }
-    .login-roles-hint p { font-size: 0.75rem; color: #aaa; margin-bottom: 10px; }
-    .role-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-    .role-badge {
-      font-size: 0.72rem; padding: 4px 12px; border-radius: 20px; font-weight: 700;
-    }
+    .role-badge { font-size: 0.72rem; padding: 3px 10px; border-radius: 20px; font-weight: 700; }
     .role-badge.admin    { background: #e8f0fe; color: #1a3a6e; }
     .role-badge.obs      { background: #fef3c7; color: #92400e; }
     .role-badge.president{ background: #d1fae5; color: #065f46; }
@@ -459,7 +505,7 @@
 <body>
 
 <!-- ══════════════════════════════════════════════════════════ -->
-<!-- ÉCRAN DE CONNEXION -->
+<!-- ÉCRAN DE CONNEXION (2 étapes) -->
 <!-- ══════════════════════════════════════════════════════════ -->
 <div id="login-overlay">
   <div class="login-box">
@@ -467,34 +513,67 @@
     <div class="login-title">Élections Municipales 2026</div>
     <div class="login-subtitle">Noisy-le-Grand · Suivi des résultats</div>
 
-    <div class="login-role-info" id="login-role-info">
-      <strong><i class="fa-solid fa-shield-halved"></i> Accès sécurisé</strong><br>
-      Saisissez votre mot de passe pour accéder à l'application.
+    <!-- ── ÉTAPE 1 : choix du rôle ── -->
+    <div class="login-step" id="login-step1">
+      <div class="step-label">Qui êtes-vous ?</div>
+      <div class="role-cards">
+        <div class="role-card admin-card" id="rc-admin" onclick="selectRole('admin')">
+          <div class="role-card-icon">👑</div>
+          <div class="role-card-label">Adminis-<br>trateur</div>
+        </div>
+        <div class="role-card obs-card" id="rc-obs" onclick="selectRole('observateur')">
+          <div class="role-card-icon">👁️</div>
+          <div class="role-card-label">Obser-<br>vateur</div>
+        </div>
+        <div class="role-card pres-card" id="rc-pres" onclick="selectRole('president')">
+          <div class="role-card-icon">🪪</div>
+          <div class="role-card-label">Président<br>de bureau</div>
+        </div>
+      </div>
+      <div class="login-footer">
+        Sélectionnez votre profil pour continuer
+      </div>
     </div>
 
-    <div class="login-error" id="login-error">
-      <i class="fa-solid fa-circle-xmark"></i> Mot de passe incorrect. Veuillez réessayer.
-    </div>
+    <!-- ── ÉTAPE 2 : bureau + mot de passe ── -->
+    <div class="login-step hidden-step" id="login-step2">
+      <!-- Récap rôle sélectionné (cliquable pour revenir) -->
+      <div class="login-step2-header" onclick="backToStep1()" id="login-step2-header">
+        <span class="login-step2-role-icon" id="s2-icon"></span>
+        <div>
+          <div class="login-step2-role-name" id="s2-name"></div>
+          <div class="login-step2-change"><i class="fa-solid fa-rotate-left"></i> Changer de profil</div>
+        </div>
+      </div>
 
-    <div class="login-input-wrap">
-      <i class="fa-solid fa-lock lock-icon"></i>
-      <input type="password" id="login-pwd" placeholder="Mot de passe"
-        onkeydown="if(event.key==='Enter') doLogin()"
-        autocomplete="current-password"/>
-      <i class="fa-solid fa-eye login-toggle-eye" id="eye-toggle"
-        onclick="toggleEye()"></i>
-    </div>
+      <!-- Sélecteur de bureau (visible uniquement pour président) -->
+      <div class="bureau-select-wrap" id="bureau-select-login-wrap" style="display:none;">
+        <label for="bureau-select-login">
+          <i class="fa-solid fa-map-marker-alt" style="color:var(--success)"></i>
+          Mon bureau de vote
+        </label>
+        <select id="bureau-select-login">
+          <option value="">— Sélectionnez votre bureau —</option>
+        </select>
+      </div>
 
-    <button class="btn-login" onclick="doLogin()">
-      <i class="fa-solid fa-right-to-bracket"></i> Se connecter
-    </button>
+      <div class="login-error" id="login-error"></div>
 
-    <div class="login-roles-hint">
-      <p>Niveaux d'accès disponibles</p>
-      <div class="role-badges">
-        <span class="role-badge admin"><i class="fa-solid fa-crown"></i> Administrateur</span>
-        <span class="role-badge obs"><i class="fa-solid fa-eye"></i> Observateur</span>
-        <span class="role-badge president"><i class="fa-solid fa-id-badge"></i> Président de bureau</span>
+      <div class="login-input-wrap">
+        <i class="fa-solid fa-lock lock-icon"></i>
+        <input type="password" id="login-pwd" placeholder="Mot de passe"
+          onkeydown="if(event.key==='Enter') doLogin()"
+          autocomplete="current-password"/>
+        <i class="fa-solid fa-eye login-toggle-eye" id="eye-toggle"
+          onclick="toggleEye()"></i>
+      </div>
+
+      <button class="btn-login" id="btn-login-submit" onclick="doLogin()">
+        <i class="fa-solid fa-right-to-bracket"></i> Se connecter
+      </button>
+
+      <div class="login-footer">
+        🔒 Accès sécurisé · Noisy-le-Grand 2026
       </div>
     </div>
   </div>
@@ -914,7 +993,7 @@
 //   president   → saisie de son bureau uniquement (via lien ?bv=X)
 // ══════════════════════════════════════════════════════════════════════════════
 const ACCESS_PASSWORDS = {
-  admin:       "Brigitte33!",    // ← Changez ce mot de passe
+  admin:       "Admin2026!",    // ← Changez ce mot de passe
   observateur: "Obs2026!",      // ← Changez ce mot de passe
   president:   "BV2026!",       // ← Changez ce mot de passe (commun à tous les présidents)
 };
@@ -1027,55 +1106,115 @@ let fbCache = {};
 // ══════════════════════════════════════
 const AUTH_SESSION_KEY = 'nlg_auth_role_2026';
 
+// Rôle sélectionné à l'étape 1 (avant validation du mot de passe)
+let pendingRole = null;
+
 function checkAuth() {
   const saved = sessionStorage.getItem(AUTH_SESSION_KEY);
   if (saved) {
+    // Reconstruire lockedBureauNum depuis la session si rôle président
+    const savedBv = sessionStorage.getItem(AUTH_SESSION_KEY + '_bv');
+    if (saved === 'president' && savedBv) {
+      const idx = BUREAUX.findIndex(b => b.num === parseInt(savedBv));
+      if (idx >= 0) {
+        lockedBureauNum = parseInt(savedBv);
+        currentBureauIdx = idx;
+        isPresidentMode = true;
+      }
+    }
     currentRole = saved;
     applyRole(currentRole);
     return true;
   }
-  // Adapter le message de l'écran login selon le contexte
-  const params = new URLSearchParams(window.location.search);
-  const bvParam = params.get('bv');
-  if (bvParam) {
-    const bvNum = parseInt(bvParam);
-    const bv = BUREAUX.find(b => b.num === bvNum);
-    document.getElementById('login-role-info').innerHTML = `
-      <strong><i class='fa-solid fa-id-badge' style='color:var(--success)'></i>
-      Bureau n°${bvNum} — ${bv ? bv.lieu : ''}</strong><br>
-      Saisissez le mot de passe <strong>Président de bureau</strong>
-      pour accéder au formulaire de saisie de votre bureau.
-    `;
-  }
+  // Pré-remplir le sélecteur de bureau dans l'écran de connexion
+  populateBureauSelectLogin();
   return false;
 }
 
+function populateBureauSelectLogin() {
+  const sel = document.getElementById('bureau-select-login');
+  if (!sel || sel.options.length > 1) return;
+  BUREAUX.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b.num;
+    opt.textContent = `Bureau n°${b.num} — ${b.lieu} (${b.adresse})`;
+    sel.appendChild(opt);
+  });
+}
+
+// Étape 1 : sélection du rôle
+function selectRole(role) {
+  pendingRole = role;
+
+  // Mettre en valeur la carte sélectionnée
+  document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+  const cardMap = { admin: 'rc-admin', observateur: 'rc-obs', president: 'rc-pres' };
+  document.getElementById(cardMap[role]).classList.add('selected');
+
+  // Configurer l'étape 2
+  const cfg = {
+    admin:       { icon: '👑', name: 'Administrateur',      btnClass: '',      hint: 'Accès complet' },
+    observateur: { icon: '👁️', name: 'Observateur',         btnClass: 'obs',   hint: 'Lecture seule' },
+    president:   { icon: '🪪', name: 'Président de bureau', btnClass: 'pres',  hint: 'Saisie de mon bureau' },
+  }[role];
+
+  document.getElementById('s2-icon').textContent = cfg.icon;
+  document.getElementById('s2-name').textContent = cfg.name + ' — ' + cfg.hint;
+
+  const btn = document.getElementById('btn-login-submit');
+  btn.className = 'btn-login ' + cfg.btnClass;
+
+  // Afficher/masquer le sélecteur de bureau
+  const bvWrap = document.getElementById('bureau-select-login-wrap');
+  bvWrap.style.display = (role === 'president') ? 'block' : 'none';
+
+  // Passer à l'étape 2 avec animation
+  const step1 = document.getElementById('login-step1');
+  const step2 = document.getElementById('login-step2');
+  step1.style.opacity = '0';
+  setTimeout(() => {
+    step1.classList.add('hidden-step');
+    step2.classList.remove('hidden-step');
+    step2.style.opacity = '0';
+    setTimeout(() => { step2.style.opacity = '1'; }, 20);
+    // Focus sur le sélecteur si président, sinon sur le mot de passe
+    if (role === 'president') {
+      document.getElementById('bureau-select-login').focus();
+    } else {
+      document.getElementById('login-pwd').focus();
+    }
+  }, 200);
+}
+
+function backToStep1() {
+  pendingRole = null;
+  document.getElementById('login-error').classList.remove('show');
+  document.getElementById('login-pwd').value = '';
+  const step1 = document.getElementById('login-step1');
+  const step2 = document.getElementById('login-step2');
+  step2.style.opacity = '0';
+  setTimeout(() => {
+    step2.classList.add('hidden-step');
+    step1.classList.remove('hidden-step');
+    step1.style.opacity = '1';
+  }, 200);
+}
+
 function doLogin() {
-  const pwd = document.getElementById('login-pwd').value;
+  const pwd     = document.getElementById('login-pwd').value;
   const inputEl = document.getElementById('login-pwd');
   const errorEl = document.getElementById('login-error');
-  const params = new URLSearchParams(window.location.search);
-  const bvParam = params.get('bv');
 
-  let role = null;
-  if      (pwd === ACCESS_PASSWORDS.admin)       role = 'admin';
-  else if (pwd === ACCESS_PASSWORDS.observateur) role = 'observateur';
-  else if (pwd === ACCESS_PASSWORDS.president)   role = 'president';
-
-  // BUG FIX 1 : mot de passe président utilisé SANS lien ?bv=X → refusé
-  if (role === 'president' && !bvParam) {
-    inputEl.classList.add('error-shake');
-    inputEl.value = '';
-    errorEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Ce mot de passe nécessite un lien bureau personnalisé (?bv=X). Contactez l\'administrateur.';
+  // Étape 1 non complétée
+  if (!pendingRole) {
+    errorEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Veuillez d\'abord sélectionner votre profil.';
     errorEl.classList.add('show');
-    setTimeout(() => inputEl.classList.remove('error-shake'), 500);
     return;
   }
 
-  // BUG FIX 2 : mot de passe observateur interdit sur un lien ?bv=X
-  if (role === 'observateur' && bvParam) role = null;
-
-  if (!role) {
+  // Vérifier le mot de passe selon le rôle choisi à l'étape 1
+  const expectedPwd = ACCESS_PASSWORDS[pendingRole];
+  if (!pwd || pwd !== expectedPwd) {
     inputEl.classList.add('error-shake');
     inputEl.value = '';
     errorEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Mot de passe incorrect. Veuillez réessayer.';
@@ -1083,6 +1222,27 @@ function doLogin() {
     setTimeout(() => inputEl.classList.remove('error-shake'), 500);
     return;
   }
+
+  // Président : vérifier qu'un bureau a bien été sélectionné
+  if (pendingRole === 'president') {
+    const selBv = document.getElementById('bureau-select-login');
+    const bvNum = parseInt(selBv.value);
+    if (!bvNum) {
+      selBv.classList.add('error-shake');
+      errorEl.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Veuillez sélectionner votre bureau de vote.';
+      errorEl.classList.add('show');
+      setTimeout(() => selBv.classList.remove('error-shake'), 500);
+      return;
+    }
+    // Verrouiller sur ce bureau
+    const bvIdx = BUREAUX.findIndex(b => b.num === bvNum);
+    lockedBureauNum  = bvNum;
+    currentBureauIdx = bvIdx;
+    isPresidentMode  = true;
+    sessionStorage.setItem(AUTH_SESSION_KEY + '_bv', bvNum);
+  }
+
+  const role = pendingRole;
 
   errorEl.classList.remove('show');
   sessionStorage.setItem(AUTH_SESSION_KEY, role);
@@ -1153,19 +1313,26 @@ function applyRole(role) {
 // ══════════════════════════════════════
 function initFromURL() {
   const params = new URLSearchParams(window.location.search);
-  const bvParam = params.get('bv');
   const tourParam = params.get('tour');
 
-  if (bvParam) {
+  // Le bureau est maintenant défini via le sélecteur de connexion (lockedBureauNum)
+  // On conserve la compatibilité avec les anciens liens ?bv=X si jamais ils existent
+  const bvParam = params.get('bv');
+  if (bvParam && !isPresidentMode) {
     const bvNum = parseInt(bvParam);
     const bvIndex = BUREAUX.findIndex(b => b.num === bvNum);
     if (bvIndex >= 0) {
-      isPresidentMode = true;
-      lockedBureauNum = bvNum;
+      isPresidentMode  = true;
+      lockedBureauNum  = bvNum;
       currentBureauIdx = bvIndex;
       document.body.classList.add('mode-president');
       applyPresidentMode(bvNum, bvIndex);
     }
+  }
+
+  // Si mode président déjà défini (via sélecteur de login), appliquer l'UI
+  if (isPresidentMode && lockedBureauNum && !bvParam) {
+    applyPresidentMode(lockedBureauNum, currentBureauIdx);
   }
 
   if (tourParam) {
@@ -1644,7 +1811,7 @@ function renderBureaux() {
         const v = d.votes[l.id]||0;
         if (v > 0) {
           const p = ex > 0 ? (v/ex*100).toFixed(1) : '0';
-          miniTags += `<span class="bureau-mini-tag" style="background:${l.couleur}22;color:${l.couleur};">${l.nom.split(' ')[0]}: ${p}%</span>`;
+          miniTags += `<span class="bureau-mini-tag" style="background:${l.couleur}22;color:${l.couleur};">${l.chef.split(' ').pop()}: ${p}%</span>`;
         }
       });
     }
@@ -1899,7 +2066,7 @@ function renderRapport() {
   const theadRow = document.getElementById('rapport-thead');
   theadRow.innerHTML = `
     <th>Bureau</th><th>Lieu</th><th>Président(e) BV</th><th>Inscrits</th><th>Votants</th><th>Participation</th>
-    <th>Exprimés</th>${LISTES.map(l=>`<th style="color:${l.couleur}">${l.nom.split(' ')[0]}</th>`).join('')}`;
+    <th>Exprimés</th>${LISTES.map(l=>`<th style="color:${l.couleur}" title="${l.nom}">${l.chef.split(' ').pop()}</th>`).join('')}`;
 
   const tbody = document.getElementById('rapport-tbody');
   tbody.innerHTML = '';

@@ -676,6 +676,11 @@
       <p style="font-size:0.88rem;color:#555;margin-bottom:14px;">
         Firebase permet à tous les présidents de bureau de saisir leurs résultats simultanément, et au tableau de bord de se mettre à jour en temps réel. C'est <strong>gratuit</strong> pour ce volume de données.
       </p>
+      <div style="background:#e8f4fd;border:1px solid #bdd3f5;border-radius:10px;padding:12px 16px;font-size:0.85rem;color:#1a3a6e;margin-bottom:16px;line-height:1.6;">
+        <strong><i class="fa-solid fa-lightbulb"></i> Comment déployer pour tout le monde ?</strong><br>
+        Remplissez la config ci-dessous, puis cliquez <strong>« Intégrer &amp; Télécharger »</strong> pour obtenir un nouveau fichier HTML avec la config incluse. 
+        Re-déployez ce fichier sur votre serveur → <strong>tous les appareils se connecteront automatiquement</strong>, sans aucune manipulation de la part des présidents.
+      </div>
 
       <div class="firebase-step">
         <div class="firebase-step-num">1</div>
@@ -730,7 +735,10 @@
 
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;">
         <button class="btn-firebase-save" onclick="saveFirebaseConfig()">
-          <i class="fa-solid fa-fire"></i> Connecter Firebase
+          <i class="fa-solid fa-fire"></i> Connecter (ce navigateur)
+        </button>
+        <button class="btn-firebase-save" onclick="embedAndDownload()" style="background:var(--success);">
+          <i class="fa-solid fa-download"></i> Intégrer &amp; Télécharger le fichier
         </button>
         <button class="btn-firebase-clear" onclick="clearFirebaseConfig()">
           <i class="fa-solid fa-xmark"></i> Déconnecter
@@ -804,6 +812,24 @@ const BUREAUX = [
   {num:42, lieu:"GS Les Richardets",                adresse:"Avenue De L'Étoile"},
   {num:43, lieu:"GS L'Oiseau Lyre",                 adresse:"6 Rue René Navier"},
 ];
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ► CONFIGURATION FIREBASE — À REMPLIR UNE SEULE FOIS PAR L'ADMINISTRATEUR ◄
+//   Copiez votre config depuis : console.firebase.google.com
+//   → Paramètres du projet → Vos applications → Web
+//   Puis RE-DÉPLOYEZ le fichier HTML sur votre serveur.
+//   Tous les appareils se connecteront automatiquement sans aucune manipulation.
+// ══════════════════════════════════════════════════════════════════════════════
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyD1T6ucJX6rIKytg8atu-Our2ZHJsft76w",
+  authDomain:        "elections-noisy-2026.firebaseapp.com",
+  databaseURL:       "https://elections-noisy-2026-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:         "elections-noisy-2026",
+  storageBucket:     "elections-noisy-2026.firebasestorage.app",
+  messagingSenderId: "358051307745",
+  appId:             "1:358051307745:web:77aab60f53b6602e4357a0",
+};
+// ══════════════════════════════════════════════════════════════════════════════
 
 // ══════════════════════════════════════
 // STATE
@@ -886,19 +912,54 @@ function applyPresidentMode(bvNum, bvIdx) {
 const FB_CONFIG_KEY = 'nlg_firebase_config';
 
 function loadFirebaseConfigUI() {
-  const saved = localStorage.getItem(FB_CONFIG_KEY);
-  if (saved) {
-    try {
-      const cfg = JSON.parse(saved);
-      ['apiKey','authDomain','databaseURL','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
-        const el = document.getElementById('fb-'+k);
-        if (el && cfg[k]) el.value = cfg[k];
-      });
-    } catch(e) {}
+  // Priorité : config intégrée > config localStorage
+  const configEmbedded = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.trim() !== '';
+  const source = configEmbedded ? FIREBASE_CONFIG : (() => {
+    const saved = localStorage.getItem(FB_CONFIG_KEY);
+    try { return saved ? JSON.parse(saved) : null; } catch(e) { return null; }
+  })();
+  if (source) {
+    ['apiKey','authDomain','databaseURL','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
+      const el = document.getElementById('fb-'+k);
+      if (el && source[k]) el.value = source[k];
+    });
+  }
+}
+
+function markEmbeddedConfig() {
+  // Affiche un badge « Config intégrée » et rend le formulaire en lecture seule
+  const card = document.getElementById('firebase-config-card');
+  if (!card) return;
+  const header = card.querySelector('.firebase-config-header');
+  if (header) {
+    header.innerHTML += ' <span style="background:rgba(255,255,255,0.25);padding:3px 10px;border-radius:12px;font-size:0.75rem;margin-left:8px;">✅ Config intégrée dans le HTML</span>';
+  }
+  // Griser les champs
+  ['apiKey','authDomain','databaseURL','projectId','storageBucket','messagingSenderId','appId'].forEach(k => {
+    const el = document.getElementById('fb-'+k);
+    if (el) { el.readOnly = true; el.style.background = '#f0f4fa'; el.style.color = '#888'; }
+  });
+  // Ajouter une note explicative
+  const body = card.querySelector('.firebase-config-body');
+  if (body) {
+    const note = document.createElement('div');
+    note.style.cssText = 'background:#d1fae5;border:1px solid #a7f3d0;border-radius:10px;padding:12px 16px;font-size:0.85rem;color:#065f46;margin-bottom:16px;line-height:1.6;';
+    note.innerHTML = `
+      <strong><i class="fa-solid fa-circle-check"></i> Configuration automatique active</strong><br>
+      La config Firebase est intégrée directement dans ce fichier HTML par l'administrateur.
+      <strong>Aucune action n'est requise de la part des présidents de bureau.</strong><br>
+      Pour modifier la config, éditez la variable <code>FIREBASE_CONFIG</code> en haut du bloc &lt;script&gt; et re-déployez le fichier.
+    `;
+    body.insertBefore(note, body.firstChild);
   }
 }
 
 function saveFirebaseConfig() {
+  // Si config intégrée dans le HTML, bloquer la modification manuelle
+  if (FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.trim() !== '') {
+    showToast('Config intégrée dans le HTML — modifiez FIREBASE_CONFIG dans le fichier source.', 'error');
+    return;
+  }
   const cfg = {
     apiKey:            document.getElementById('fb-apiKey').value.trim(),
     authDomain:        document.getElementById('fb-authDomain').value.trim(),
@@ -1629,6 +1690,62 @@ function copyAllLinks() {
 }
 
 // ══════════════════════════════════════
+// EMBED CONFIG & DOWNLOAD HTML
+// ══════════════════════════════════════
+function embedAndDownload() {
+  const cfg = {
+    apiKey:            document.getElementById('fb-apiKey').value.trim(),
+    authDomain:        document.getElementById('fb-authDomain').value.trim(),
+    databaseURL:       document.getElementById('fb-databaseURL').value.trim(),
+    projectId:         document.getElementById('fb-projectId').value.trim(),
+    storageBucket:     document.getElementById('fb-storageBucket').value.trim(),
+    messagingSenderId: document.getElementById('fb-messagingSenderId').value.trim(),
+    appId:             document.getElementById('fb-appId').value.trim(),
+  };
+
+  if (!cfg.apiKey || !cfg.databaseURL) {
+    showToast('Renseignez au minimum l\'API Key et la Database URL avant de télécharger.', 'error');
+    return;
+  }
+
+  // Lire le source HTML courant
+  const html = document.documentElement.outerHTML;
+
+  // Remplacer le bloc FIREBASE_CONFIG vide par les vraies valeurs
+  const configBlock = `const FIREBASE_CONFIG = {
+  apiKey:            "${cfg.apiKey}",
+  authDomain:        "${cfg.authDomain}",
+  databaseURL:       "${cfg.databaseURL}",
+  projectId:         "${cfg.projectId}",
+  storageBucket:     "${cfg.storageBucket}",
+  messagingSenderId: "${cfg.messagingSenderId}",
+  appId:             "${cfg.appId}",
+};`;
+
+  // Pattern pour remplacer l'ancien bloc (qu'il soit vide ou déjà rempli)
+  const configPattern = /const FIREBASE_CONFIG = \{[\s\S]*?\};/;
+  let newHtml = html.replace(configPattern, configBlock);
+
+  if (newHtml === html) {
+    showToast('Impossible de localiser FIREBASE_CONFIG dans le fichier. Rechargez la page.', 'error');
+    return;
+  }
+
+  // Forcer le doctype (outerHTML ne l'inclut pas)
+  newHtml = '<!DOCTYPE html>\n' + newHtml;
+
+  const blob = new Blob([newHtml], { type: 'text/html;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'noisy_elections_2026_SYNC.html';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  showToast('Fichier téléchargé ! Déployez-le sur votre serveur pour activer la sync partout.', 'success');
+}
+
+// ══════════════════════════════════════
 // EXPORT CSV
 // ══════════════════════════════════════
 function exportCSV() {
@@ -1706,13 +1823,24 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. Initialiser depuis URL
   initFromURL();
 
-  // 2. Charger la config Firebase si sauvegardée
-  loadFirebaseConfigUI();
-  const savedConfig = localStorage.getItem('nlg_firebase_config');
-  if (savedConfig) {
-    try {
-      initFirebase(JSON.parse(savedConfig));
-    } catch(e) { /* Ignore */ }
+  // 2. ── Priorité de la config Firebase ──
+  //    Ordre : config intégrée dans le HTML > config sauvegardée en localStorage
+  const configEmbedded = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.trim() !== '';
+  const savedConfigRaw = localStorage.getItem('nlg_firebase_config');
+
+  if (configEmbedded) {
+    // ✅ Config intégrée dans le HTML → connexion automatique, aucune action de l'utilisateur
+    loadFirebaseConfigUI();       // pré-remplit le formulaire UI (lecture seule)
+    initFirebase(FIREBASE_CONFIG);
+    // Marquer le formulaire en lecture seule pour signaler que c'est la config intégrée
+    markEmbeddedConfig();
+  } else if (savedConfigRaw) {
+    // Config sauvegardée localement (mode de repli)
+    loadFirebaseConfigUI();
+    try { initFirebase(JSON.parse(savedConfigRaw)); } catch(e) { /* Ignore */ }
+  } else {
+    // Aucune config → mode local seulement
+    loadFirebaseConfigUI();
   }
 
   // 3. Initialiser l'interface
